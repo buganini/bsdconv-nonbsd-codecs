@@ -17,22 +17,27 @@ builddir:
 	mkdir -p build/share/bsdconv/to
 
 codecs_table: builddir
-.	for item in ${TODO_CODECS_TABLE}
-	bsdconv_mktable codecs/${item}.txt ./build/share/bsdconv/${item}
-.	endfor
+	@for item in ${TODO_CODECS_TABLE} ; do \
+		bsdconv_mktable codecs/$${item}.txt ./build/share/bsdconv/$${item} ; \
+	done
 
 codecs_callback: builddir
-.	for item in ${TODO_CODECS_CALLBACK}
-	$(CC) ${CFLAGS} -fPIC -shared -o ./build/share/bsdconv/${item}.so codecs/${item}.c
-.	endfor
+	@for item in ${TODO_CODECS_CALLBACK} ; do \
+		$(CC) ${CFLAGS} -fPIC -shared -o ./build/share/bsdconv/$${item}.so codecs/$${item}.c ; \
+	done
 
 clean:
 	rm -rf build
 
-install:
-.	for item in ${TODO_CODECS_TABLE}
-	install -m 444 build/share/bsdconv/${item} ${PREFIX}/share/bsdconv/${item}
-.	endfor
-.	for item in ${TODO_CODECS_CALLBACK}
-	install -s -m 444 build/share/bsdconv/${item}.so ${PREFIX}/share/bsdconv/${item}.so
-.	endfor
+installdir:
+	mkdir -p ${PREFIX}/share/bsdconv/from
+	mkdir -p ${PREFIX}/share/bsdconv/inter
+	mkdir -p ${PREFIX}/share/bsdconv/to
+
+install: installdir
+	@for item in ${TODO_CODECS_TABLE} ; do \
+		install -m 444 build/share/bsdconv/$${item} ${PREFIX}/share/bsdconv/$${item} ; \
+	done
+	@for item in ${TODO_CODECS_CALLBACK} ; do \
+		install -m 444 build/share/bsdconv/$${item}.so ${PREFIX}/share/bsdconv/$${item}.so ; \
+	done
