@@ -1,29 +1,23 @@
 PREFIX?=/usr/local
-TODO_CODECS_TABLE=
-TODO_CODECS_TABLE+=inter/CONVERTZ_SIM
-TODO_CODECS_TABLE+=inter/CONVERTZ_TRA
-TODO_CODECS_TABLE+=inter/TONGWEN_SP
-TODO_CODECS_TABLE+=inter/TONGWEN_SW
-TODO_CODECS_TABLE+=inter/TONGWEN_TP
-TODO_CODECS_TABLE+=inter/TONGWEN_TW
+CODECS=
+CODECS+=inter/CONVERTZ_SIM
+CODECS+=inter/CONVERTZ_TRA
+CODECS+=inter/TONGWEN_SP
+CODECS+=inter/TONGWEN_SW
+CODECS+=inter/TONGWEN_TP
+CODECS+=inter/TONGWEN_TW
 
-TODO_CODECS_CALLBACK=
-
-all: builddir codecs_table codecs_callback
+all: builddir codecs
 
 builddir:
 	mkdir -p build/share/bsdconv/from
 	mkdir -p build/share/bsdconv/inter
 	mkdir -p build/share/bsdconv/to
 
-codecs_table: builddir
-	@for item in ${TODO_CODECS_TABLE} ; do \
-		bsdconv_mktable codecs/$${item}.txt ./build/share/bsdconv/$${item} ; \
-	done
-
-codecs_callback: builddir
-	@for item in ${TODO_CODECS_CALLBACK} ; do \
-		$(CC) ${CFLAGS} -fPIC -shared -o ./build/share/bsdconv/$${item}.so codecs/$${item}.c ; \
+codecs: builddir
+	@for item in ${CODECS} ; do \
+		bsdconv-mktable codecs/$${item}.txt ./build/share/bsdconv/$${item} ; \
+		if [ -e codecs/$${item}.c ]; then $(CC) ${CFLAGS} codecs/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/$${item}.so -lbsdconv ${LIBS} ; fi ; \
 	done
 
 clean:
@@ -35,9 +29,7 @@ installdir:
 	mkdir -p ${PREFIX}/share/bsdconv/to
 
 install: installdir
-	@for item in ${TODO_CODECS_TABLE} ; do \
+	@for item in ${CODECS} ; do \
 		install -m 444 build/share/bsdconv/$${item} ${PREFIX}/share/bsdconv/$${item} ; \
-	done
-	@for item in ${TODO_CODECS_CALLBACK} ; do \
-		install -m 444 build/share/bsdconv/$${item}.so ${PREFIX}/share/bsdconv/$${item}.so ; \
+		if [ -e build/share/bsdconv/$${item}.so ]; then install -m 444 build/share/bsdconv/$${item}.so ${PREFIX}/share/bsdconv/$${item}.so ; fi ; \
 	done
