@@ -16,8 +16,8 @@ builddir:
 
 codecs: builddir
 	@for item in ${CODECS} ; do \
-		bsdconv-mktable codecs/$${item}.txt ./build/share/bsdconv/$${item} ; \
-		if [ -e codecs/$${item}.c ]; then $(CC) ${CFLAGS} codecs/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/$${item}.so -lbsdconv ${LIBS} ; fi ; \
+		bsdconv-mktable modules/$${item}.txt ./build/share/bsdconv/$${item} ; \
+		if [ -e modules/$${item}.c ]; then $(CC) ${CFLAGS} modules/$${item}.c -L./build/lib/ -fPIC -shared -o ./build/share/bsdconv/$${item}.so -lbsdconv ${LIBS} ; fi ; \
 	done
 
 clean:
